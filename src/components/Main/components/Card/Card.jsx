@@ -1,6 +1,10 @@
 export default function Card(props) {
-  const { card, onCardClick } = props;
+  const { card, onCardClick, onCardLike, onCardDelete } = props;
   const { name, link, isLiked } = card;
+
+  const cardLikeButtonClassName = `card__like-button ${
+    isLiked ? "card__like-button_is-active" : ""
+  }`;
 
   return (
     <li className="card">
@@ -15,6 +19,7 @@ export default function Card(props) {
         aria-label="Delete card"
         className="card__delete-button"
         type="button"
+        onClick={() => onCardDelete(card)}
       />
 
       <div className="card__description">
@@ -22,7 +27,8 @@ export default function Card(props) {
         <button
           aria-label="Like card"
           type="button"
-          className="card__like-button"
+          className={cardLikeButtonClassName}
+          onClick={() => onCardLike(card)}
         />
       </div>
     </li>

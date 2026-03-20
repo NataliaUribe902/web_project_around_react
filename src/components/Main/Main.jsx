@@ -1,34 +1,65 @@
-import { useState } from "react";
-import avatar from "../../images/avatar.jpg";
+import { useContext, useEffect, useState } from "react";
 import Popup from "./components/Popup/Popup";
 import NewCard from "./components/NewCard/NewCard";
 import EditProfile from "./components/EditProfile/EditProfile";
 import EditAvatar from "./components/EditAvatar/EditAvatar";
 import Card from "./components/Card/Card";
 import ImagePopup from "./components/ImagePopup/ImagePopup";
-
+import api from "../../utils/api";
+import { CurrentUserContext } from "../../context/CurrentUserContext";
 function Main() {
-  const cards = [
-    {
-      isLiked: false,
-      _id: "5d1f0611d321eb4bdcd707dd",
-      name: "Yosemite Valley",
-      link: "https://practicum-content.s3.us-west-1.amazonaws.com/web-code/moved_yosemite.jpg",
-      owner: "5d1f0611d321eb4bdcd707dd",
-      createdAt: "2019-07-05T08:10:57.741Z",
-    },
-    {
-      isLiked: false,
-      _id: "5d1f064ed321eb4bdcd707de",
-      name: "Lake Louise",
-      link: "https://practicum-content.s3.us-west-1.amazonaws.com/web-code/moved_lake-louise.jpg",
-      owner: "5d1f0611d321eb4bdcd707dd",
-      createdAt: "2019-07-05T08:11:58.324Z",
-    },
-  ];
+  const [cards, setCards] = useState([]);
+  const currentUser = useContext(CurrentUserContext);
 
-  console.log(cards);
+  useEffect(() => {
+    api
+      .getCards()
+      .then((data) => {
+        setCards(data);
+      })
+      .catch((err) => console.log(err));
+  }, []);
+
   const [popup, setPopup] = useState(null);
+
+  function handleCardLike(card) {
+    const isLiked = card.isLiked;
+
+    if (isLiked) {
+      api
+        .removeLike(card._id)
+        .then((newCard) => {
+          setCards((state) =>
+            state.map((currentCard) =>
+              currentCard._id === card._id ? newCard : currentCard,
+            ),
+          );
+        })
+        .catch((error) => console.error(error));
+    } else {
+      api
+        .addLike(card._id)
+        .then((newCard) => {
+          setCards((state) =>
+            state.map((currentCard) =>
+              currentCard._id === card._id ? newCard : currentCard,
+            ),
+          );
+        })
+        .catch((error) => console.error(error));
+    }
+  }
+
+  function handleCardDelete(card) {
+    api
+      .deleteCard(card._id)
+      .then(() => {
+        setCards((state) =>
+          state.filter((currentCard) => currentCard._id !== card._id),
+        );
+      })
+      .catch((error) => console.error(error));
+  }
 
   const newCardPopup = {
     title: "Nuevo lugar",
@@ -63,7 +94,11 @@ function Main() {
     <main className="content">
       <section className="profile page__section">
         <div className="profile__image-container">
-          <img className="profile__image" src={avatar} alt="Avatar" />
+          <img
+            className="profile__image"
+            src={currentUser?.avatar}
+            alt="Avatar"
+          />
           <button
             className="profile__avatar-edit"
             type="button"
@@ -73,14 +108,14 @@ function Main() {
         </div>
 
         <div className="profile__info">
-          <h1 className="profile__title">Jacques Cousteau</h1>
+          <h1 className="profile__title">{currentUser?.name}</h1>
           <button
             aria-label="Editar perfil"
             className="profile__edit-button"
             type="button"
             onClick={() => handleOpenPopup(editProfilePopup)}
           />
-          <p className="profile__description">Explorador</p>
+          <p className="profile__description">{currentUser?.about}</p>
         </div>
 
         <button
@@ -98,6 +133,8 @@ function Main() {
               key={card._id}
               card={card}
               onCardClick={handleOpenImagePopup}
+              onCardLike={handleCardLike}
+              onCardDelete={handleCardDelete}
             />
           ))}
         </ul>
