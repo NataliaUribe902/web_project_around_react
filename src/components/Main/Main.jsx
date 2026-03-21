@@ -4,7 +4,7 @@ import NewCard from "./components/NewCard/NewCard";
 import EditProfile from "../EditProfile/EditProfile";
 import EditAvatar from "./components/EditAvatar/EditAvatar";
 import Card from "./components/Card/Card";
-import { CurrentUserContext } from "../../context/CurrentUserContext";
+import { CurrentUserContext } from "../../contexts/CurrentUserContext";
 function Main({
   cards,
   onCardLike,

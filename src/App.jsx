@@ -1,7 +1,7 @@
 import Header from "./components/Header/Header";
 import Main from "./components/Main/Main";
 import Footer from "./components/Footer/Footer";
-import { CurrentUserContext } from "./context/CurrentUserContext";
+import { CurrentUserContext } from "./contexts/CurrentUserContext";
 import { useState, useEffect } from "react";
 import api from "./utils/api";
 import ImagePopup from "./components/Main/components/ImagePopup/ImagePopup";
