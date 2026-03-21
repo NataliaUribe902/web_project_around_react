@@ -1,15 +1,14 @@
 import { useContext, useEffect, useState } from "react";
 import Popup from "./components/Popup/Popup";
 import NewCard from "./components/NewCard/NewCard";
-import EditProfile from "./components/EditProfile/EditProfile";
+import EditProfile from "../EditProfile/EditProfile";
 import EditAvatar from "./components/EditAvatar/EditAvatar";
 import Card from "./components/Card/Card";
-import ImagePopup from "./components/ImagePopup/ImagePopup";
 import api from "../../utils/api";
 import { CurrentUserContext } from "../../context/CurrentUserContext";
-function Main() {
+function Main({ onOpenPopup, onClosePopup, onCardClick, popup }) {
   const [cards, setCards] = useState([]);
-  const currentUser = useContext(CurrentUserContext);
+  const { currentUser } = useContext(CurrentUserContext);
 
   useEffect(() => {
     api
@@ -19,8 +18,6 @@ function Main() {
       })
       .catch((err) => console.log(err));
   }, []);
-
-  const [popup, setPopup] = useState(null);
 
   function handleCardLike(card) {
     const isLiked = card.isLiked;
@@ -76,20 +73,6 @@ function Main() {
     children: <EditAvatar />,
   };
 
-  function handleOpenPopup(popup) {
-    setPopup(popup);
-  }
-
-  function handleClosePopup() {
-    setPopup(null);
-  }
-  function handleOpenImagePopup(card) {
-    setPopup({
-      title: null,
-      children: <ImagePopup card={card} />,
-    });
-  }
-
   return (
     <main className="content">
       <section className="profile page__section">
@@ -103,7 +86,7 @@ function Main() {
             className="profile__avatar-edit"
             type="button"
             aria-label="Editar avatar"
-            onClick={() => handleOpenPopup(editAvatarPopup)}
+            onClick={() => onOpenPopup(editAvatarPopup)}
           />
         </div>
 
@@ -113,7 +96,7 @@ function Main() {
             aria-label="Editar perfil"
             className="profile__edit-button"
             type="button"
-            onClick={() => handleOpenPopup(editProfilePopup)}
+            onClick={() => onOpenPopup(editProfilePopup)}
           />
           <p className="profile__description">{currentUser?.about}</p>
         </div>
@@ -122,7 +105,7 @@ function Main() {
           aria-label="Agregar tarjeta"
           className="profile__add-button"
           type="button"
-          onClick={() => handleOpenPopup(newCardPopup)}
+          onClick={() => onOpenPopup(newCardPopup)}
         />
       </section>
 
@@ -132,7 +115,7 @@ function Main() {
             <Card
               key={card._id}
               card={card}
-              onCardClick={handleOpenImagePopup}
+              onCardClick={onCardClick}
               onCardLike={handleCardLike}
               onCardDelete={handleCardDelete}
             />
@@ -141,7 +124,7 @@ function Main() {
       </section>
 
       {popup && (
-        <Popup onClose={handleClosePopup} title={popup.title}>
+        <Popup onClose={onClosePopup} title={popup.title}>
           {popup.children}
         </Popup>
       )}
