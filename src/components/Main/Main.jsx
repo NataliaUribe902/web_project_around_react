@@ -1,10 +1,11 @@
-import { useContext, useEffect, useState } from "react";
+import { useContext } from "react";
 import Popup from "./components/Popup/Popup";
 import NewCard from "./components/NewCard/NewCard";
 import EditProfile from "../EditProfile/EditProfile";
 import EditAvatar from "./components/EditAvatar/EditAvatar";
 import Card from "./components/Card/Card";
 import { CurrentUserContext } from "../../contexts/CurrentUserContext";
+
 function Main({
   cards,
   onCardLike,
